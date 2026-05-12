@@ -1,1 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indrajith Chirakkal | Cinematic Portfolio</title>
+    
+    <!-- Fonts: Bebas Neue for cinematic headers, Montserrat for clean tech text -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Animation and WebGL Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lenis for smooth luxury scrolling -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
+    <style>
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: #030303; 
+            overflow-x: hidden; 
+        }
+        
+        /* Cinematic typography */
+        h1, h2, h3, h4, h5, .cinematic-font { 
+            font-family: 'Bebas Neue', sans-serif; 
+            letter-spacing: 0.05em; 
+        }
+        
+        /* Subtle Film Grain Overlay */
+        .film-grain {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999; opacity: 0.05;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        /* Ambient Center Glow */
+        .ambient-glow {
+            position: absolute; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(20, 35, 60, 0.3) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: -1;
+        }
+
+        #canvas-container { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; 
+        }
+
+        /* Fullscreen Intro Sequence */
+        #intro-screen { 
+            position: fixed; inset: 0; background: #000; z-index: 5000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .name-reveal { font-size: 8vw; opacity: 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        
+        /* Triple Circle Animation */
+        .symbol-container { position: absolute; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.8); }
+        .circle { position: absolute; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; }
+        .circle-1 { width: 220px; height: 220px; border-top-color: #fff; animation: spin 4s linear infinite; }
+        .circle-2 { width: 180px; height: 180px; border-right-color: #888; animation: spin-reverse 5s linear infinite; }
+        .circle-3 { width: 140px; height: 140px; border-bottom-color: #444; animation: spin 6s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        .symbol-text { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: 0.8rem; letter-spacing: 0.4em; color: #fff; }
+
+        /* Storytelling Sequence Styles */
+        .story-title { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10vw; opacity: 0; text-align: center; white-space: nowrap; }
+        #story-container { position: relative; height: 400vh; }
+        .sticky-wrapper { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+
+        /* Minimal Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body class="antialiased selection:bg-gray-800 selection:text-white">
+    
+    <div class="film-grain"></div>
+    <div id="canvas-container"></div>
+    
+    <!-- Intro Overlay -->
+    <div id="intro-screen">
+        <h1 class="name-reveal cinematic-font text-white">INDRAJITH CHIRAKKAL</h1>
+        <div class="symbol-container" id="intro-symbol">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+            <div class="symbol-text">PORTFOLIO</div>
+        </div>
+    </div>
+
+    <!-- Main Content wrapped for transition -->
+    <main id="main-content" style="opacity: 0;">
+        
+        <section id="story-container">
+            <div class="sticky-wrapper">
+                <h2 class="story-title cinematic-font text-gray-500" id="title-1">DIGITAL CREATOR</h2>
+                <h2 class="story-title cinematic-font text-gray-400" id="title-2">VISUAL DESIGNER</h2>
+                <h2 class="story-title cinematic-font text-white" id="title-3">CREATIVE DEVELOPER</h2>
+            </div>
+        </section>
+
+        <section class="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+            <div class="ambient-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="z-10 max-w-6xl mx-auto text-center mt-20">
+                <h1 class="cinematic-font text-6xl md:text-8xl lg:text-[9rem] leading-[0.8] uppercase mb-10 text-white drop-shadow-2xl">
+                    Creating cinematic<br>
+                    <span class="text-gray-600">digital experiences</span>
+                </h1>
+                <p class="text-gray-400 md:text-xl font-light tracking-widest max-w-2xl mx-auto mb-16 uppercase text-sm">
+                    Through design, motion, and modern creative technology.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="#work" class="px-10 py-5 border border-white text-white uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-colors duration-500">View Work</a>
+                    <a href="#contact" class="px-10 py-5 border border-gray-800 text-gray-400 uppercase tracking-widest text-xs hover:border-gray-500 transition-colors duration-500">Contact</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-40 px-6 border-t border-gray-900 bg-black">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 items-center">
+                <div class="md:col-span-5 relative w-full aspect-[3/4] bg-gray-900 overflow-hidden group">
+                    <img src="https://placehold.co/800x1200/0a0a0a/333333?text=Cinematic+Portrait" alt="Indrajith Portrait" class="w-full h-full object-cover opacity-50 group-hover:opacity-80 transition-opacity duration-1000 group-hover:scale-105 transform grayscale">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                </div>
+                <div class="md:col-span-7 md:pl-10">
+                    <h2 class="cinematic-font text-5xl md:text-7xl lg:text-8xl mb-10 text-gray-200">The Architect of <br><span class="text-gray-700">Atmosphere</span></h2>
+                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed font-light mb-8 max-w-2xl">
+                        B.Sc. Computer Science graduate from Kerala focused on cinematic visuals, immersive motion design, frontend experiences, and modern digital storytelling inspired by automotive culture and futuristic aesthetics.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-40 px-6">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="cinematic-font text-6xl md:text-8xl mb-20 text-gray-800">Arsenal</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">Creative Direction</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">Cinematic Editing</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">Frontend Development</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">AI Creative Workflows</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">Motion Design</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                    <div class="group cursor-default">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-gray-500 group-hover:text-white transition-colors duration-500">Vibe Coding</h3>
+                        <div class="h-[1px] w-0 bg-white mt-4 group-hover:w-full transition-all duration-700 ease-out"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="py-40 px-6 border-y border-gray-900 bg-[#020202]">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="cinematic-font text-5xl md:text-8xl mb-16 text-white text-right">Featured Operation</h2>
+                
+                <div class="relative group cursor-pointer overflow-hidden border border-gray-900">
+                    <div class="absolute inset-0 bg-blue-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10 pointer-events-none"></div>
+                    <img src="https://placehold.co/1920x1080/050505/222222?text=GAMEVRSE+MULTIPLAYER+PLATFORM" alt="GAMEVRSE" class="w-full object-cover aspect-video group-hover:scale-105 transition-transform duration-[2000ms] ease-out grayscale group-hover:grayscale-0">
+                    
+                    <div class="absolute bottom-0 left-0 p-8 md:p-16 z-20 w-full bg-gradient-to-t from-black via-black/80 to-transparent">
+                        <h3 class="cinematic-font text-5xl md:text-8xl text-white mb-4 translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-out">GAMEVRSE</h3>
+                        <div class="overflow-hidden">
+                            <p class="text-blue-400 font-mono text-xs md:text-sm mb-6 tracking-[0.2em] uppercase translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-100 ease-out">Real-Time Multiplayer Web Platform</p>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-gray-400 max-w-3xl font-light text-sm md:text-base translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-200 ease-out">
+                                Developed a browser-based multiplayer gaming platform using HTML, CSS, JavaScript, Node.js, Express.js, and Socket.IO.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-40 px-6">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="cinematic-font text-5xl md:text-8xl mb-24 text-gray-800">Operational History</h2>
+                <div class="space-y-20">
+                    <div class="border-l-2 border-gray-900 pl-8 md:pl-12 hover:border-gray-500 transition-colors duration-500">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-white tracking-wide">Freelance Digital Creator</h3>
+                        <p class="text-gray-500 mt-4 font-light text-lg">Created promotional visuals and cinematic short-form content using modern editing and AI-assisted workflows.</p>
+                    </div>
+                    <div class="border-l-2 border-gray-900 pl-8 md:pl-12 hover:border-gray-500 transition-colors duration-500">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-white tracking-wide">Admission Counselor</h3>
+                        <p class="text-gray-500 mt-4 font-light text-lg">Handled student communication and admissions coordination professionally.</p>
+                    </div>
+                    <div class="border-l-2 border-gray-900 pl-8 md:pl-12 hover:border-gray-500 transition-colors duration-500">
+                        <h3 class="cinematic-font text-4xl md:text-5xl text-white tracking-wide">Operations Coordinator</h3>
+                        <p class="text-gray-500 mt-4 font-light text-lg">Managed workflow coordination and operational processes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="min-h-screen flex items-center justify-center px-6 bg-[#030303] py-32 border-t border-gray-900">
+            <h2 class="cinematic-font text-5xl md:text-7xl lg:text-9xl text-center leading-[0.85] max-w-7xl mx-auto uppercase text-white opacity-90 drop-shadow-2xl">
+                I build cinematic digital experiences inspired by <br>
+                <span class="text-gray-700 hover:text-white transition-colors duration-700 cursor-default">motion</span>, 
+                <span class="text-gray-700 hover:text-white transition-colors duration-700 cursor-default">technology</span>, <br>
+                <span class="text-gray-700 hover:text-white transition-colors duration-700 cursor-default">automotive culture</span>, 
+                and <span class="text-gray-700 hover:text-white transition-colors duration-700 cursor-default">immersive storytelling</span>.
+            </h2>
+        </section>
+
+        <section class="py-40 px-6 border-t border-gray-900 bg-black">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="cinematic-font text-5xl md:text-8xl mb-16 text-gray-800 text-center">Visual Influences</h2>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden group">
+                        <img src="https://placehold.co/400x600/0a0a0a/222222?text=Motorcycles" alt="Motorcycles" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span class="cinematic-font text-2xl tracking-widest text-white">Motorcycles</span>
+                        </div>
+                    </div>
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden group">
+                        <img src="https://placehold.co/400x600/0a0a0a/222222?text=Automotive" alt="Automotive" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span class="cinematic-font text-2xl tracking-widest text-white">Automotive</span>
+                        </div>
+                    </div>
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden group">
+                        <img src="https://placehold.co/400x600/0a0a0a/222222?text=Fitness" alt="Fitness" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span class="cinematic-font text-2xl tracking-widest text-white">Fitness</span>
+                        </div>
+                    </div>
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden group">
+                        <img src="https://placehold.co/400x600/0a0a0a/222222?text=Cinematics" alt="Cinematic" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span class="cinematic-font text-2xl tracking-widest text-white">Cinematics</span>
+                        </div>
+                    </div>
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden group col-span-2 md:col-span-1">
+                        <img src="https://placehold.co/400x600/0a0a0a/222222?text=Tech" alt="Technology" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span class="cinematic-font text-2xl tracking-widest text-white">Technology</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-40 px-6 bg-[#020202] relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-gray-800/10 rounded-full blur-[120px] pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-20 relative z-10">
+                <div>
+                    <h2 class="cinematic-font text-7xl md:text-[10rem] leading-[0.8] mb-8 text-white">Initiate <br><span class="text-gray-600">Contact</span></h2>
+                    <div class="w-32 h-[1px] bg-gray-700 mb-12"></div>
+                    
+                    <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Location</p>
+                    <p class="text-lg text-gray-300 font-light mb-10">Vadakkenchery, Palakkad,<br>Kerala, India</p>
+                    
+                    <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em
