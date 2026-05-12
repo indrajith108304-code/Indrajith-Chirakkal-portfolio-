@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en" class="bg-black text-white">
 <head>
     <meta charset="UTF-8">
@@ -49,15 +49,8 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; 
         }
 
-        /* Fullscreen Intro Sequence */
-        #intro-screen { 
-            position: fixed; inset: 0; background: #000; z-index: 5000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-        .name-reveal { font-size: 8vw; opacity: 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        
         /* Triple Circle Animation */
-        .symbol-container { position: absolute; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.8); }
+        .symbol-container { position: absolute; display: flex; align-items: center; justify-content: center; opacity: 0; }
         .circle { position: absolute; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; }
         .circle-1 { width: 220px; height: 220px; border-top-color: #fff; animation: spin 4s linear infinite; }
         .circle-2 { width: 180px; height: 180px; border-right-color: #888; animation: spin-reverse 5s linear infinite; }
@@ -68,7 +61,8 @@
 
         /* Storytelling Sequence Styles */
         .story-title { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10vw; opacity: 0; text-align: center; white-space: nowrap; }
-        #story-container { position: relative; height: 400vh; }
+        .story-name { font-size: 8vw; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        #story-container { position: relative; height: 700vh; }
         .sticky-wrapper { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 
         /* Minimal Scrollbar */
@@ -82,23 +76,21 @@
     
     <div class="film-grain"></div>
     <div id="canvas-container"></div>
-    
-    <!-- Intro Overlay -->
-    <div id="intro-screen">
-        <h1 class="name-reveal cinematic-font text-white">INDRAJITH CHIRAKKAL</h1>
-        <div class="symbol-container" id="intro-symbol">
-            <div class="circle circle-1"></div>
-            <div class="circle circle-2"></div>
-            <div class="circle circle-3"></div>
-            <div class="symbol-text">PORTFOLIO</div>
-        </div>
-    </div>
 
-    <!-- Main Content wrapped for transition -->
-    <main id="main-content" style="opacity: 0;">
+    <!-- Main Content -->
+    <main id="main-content">
         
         <section id="story-container">
             <div class="sticky-wrapper">
+                <h1 class="story-title story-name cinematic-font text-white" id="title-name">INDRAJITH CHIRAKKAL</h1>
+                
+                <div class="story-title symbol-container" id="title-symbol">
+                    <div class="circle circle-1"></div>
+                    <div class="circle circle-2"></div>
+                    <div class="circle circle-3"></div>
+                    <div class="symbol-text">PORTFOLIO</div>
+                </div>
+
                 <h2 class="story-title cinematic-font text-gray-500" id="title-1">DIGITAL CREATOR</h2>
                 <h2 class="story-title cinematic-font text-gray-400" id="title-2">VISUAL DESIGNER</h2>
                 <h2 class="story-title cinematic-font text-white" id="title-3">CREATIVE DEVELOPER</h2>
@@ -270,9 +262,7 @@
                     <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Location</p>
                     <p class="text-lg text-gray-300 font-light mb-10">Vadakkenchery, Palakkad,<br>Kerala, India</p>
                     
-    
-
-                 <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Direct Line</p>
+                    <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Direct Line</p>
                     <p class="text-lg text-gray-300 font-light mb-10">+91 8129380661</p>
 
                     <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Transmission</p>
@@ -387,30 +377,7 @@
             }
             initThreeJS();
 
-            // 4. Cinematic Intro Sequence
-            // Locks scrolling during intro
-            document.body.style.overflow = 'hidden';
-            
-            var introTimeline = gsap.timeline();
-            introTimeline
-                .to('.name-reveal', { opacity: 1, duration: 2.5, ease: "power2.inOut" })
-                .to('.name-reveal', { opacity: 0, duration: 1.5, ease: "power2.inOut", delay: 1 })
-                .to('#intro-symbol', { opacity: 1, scale: 1, duration: 2, ease: "power3.out" })
-                .to('#intro-screen', { 
-                    opacity: 0, 
-                    duration: 1.5, 
-                    ease: "power2.inOut", 
-                    delay: 1.5,
-                    onComplete: function() {
-                        document.getElementById('intro-screen').style.display = 'none';
-                        document.body.style.overflow = ''; // Restore scrolling
-                        
-                        // Fade in main content
-                        gsap.to('#main-content', { opacity: 1, duration: 1.5 });
-                    }
-                });
-
-            // 5. Scroll Storytelling (Movie Title Cards)
+            // 4. Scroll Storytelling (Movie Title Cards)
             var storyTimeline = gsap.timeline({
                 scrollTrigger: {
                     trigger: '#story-container',
@@ -422,6 +389,12 @@
 
             // Animate titles passing by
             storyTimeline
+                .to('#title-name', { opacity: 1, scale: 1.05, duration: 1 })
+                .to('#title-name', { opacity: 0, scale: 1.15, duration: 1 })
+
+                .to('#title-symbol', { opacity: 1, scale: 1.2, duration: 1 })
+                .to('#title-symbol', { opacity: 0, scale: 1.3, duration: 1 })
+
                 .to('#title-1', { opacity: 1, scale: 1.05, duration: 1 })
                 .to('#title-1', { opacity: 0, scale: 1.15, duration: 1 })
                 
@@ -434,5 +407,4 @@
         });
     </script>
 </body>
-</html>
-            
+</html>                 
