@@ -270,4 +270,169 @@
                     <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Location</p>
                     <p class="text-lg text-gray-300 font-light mb-10">Vadakkenchery, Palakkad,<br>Kerala, India</p>
                     
-                    <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em
+    
+
+                 <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Direct Line</p>
+                    <p class="text-lg text-gray-300 font-light mb-10">+91 8129380661</p>
+
+                    <p class="font-mono text-gray-600 text-xs mb-2 uppercase tracking-[0.2em]">Transmission</p>
+                    <a href="mailto:indrajith108304@gmail.com" class="text-lg text-gray-300 font-light hover:text-white transition-colors duration-300">indrajith108304@gmail.com</a>
+                </div>
+                
+                <div class="flex flex-col gap-8 text-right w-full md:w-auto">
+                    <a href="https://github.com/indrajith108304-code" target="_blank" class="group flex items-center justify-between md:justify-end gap-8 border-b border-gray-900 pb-4 hover:border-gray-500 transition-colors duration-500">
+                        <span class="cinematic-font text-4xl text-gray-600 group-hover:text-white transition-colors duration-300">GitHub</span>
+                        <span class="text-gray-700 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                    </a>
+                    <a href="https://instagram.com/_indrajith_chirakkal_" target="_blank" class="group flex items-center justify-between md:justify-end gap-8 border-b border-gray-900 pb-4 hover:border-gray-500 transition-colors duration-500">
+                        <span class="cinematic-font text-4xl text-gray-600 group-hover:text-white transition-colors duration-300">Instagram</span>
+                        <span class="text-gray-700 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                    </a>
+                    <a href="https://linkedin.com/in/indrajith-c-133481361" target="_blank" class="group flex items-center justify-between md:justify-end gap-8 border-b border-gray-900 pb-4 hover:border-gray-500 transition-colors duration-500">
+                        <span class="cinematic-font text-4xl text-gray-600 group-hover:text-white transition-colors duration-300">LinkedIn</span>
+                        <span class="text-gray-700 group-hover:translate-x-2 transition-transform duration-300">→</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto mt-32 flex justify-between items-center text-gray-700 font-mono text-xs uppercase tracking-widest border-t border-gray-900 pt-8">
+                <span>© Indrajith Chirakkal</span>
+                <span>All Rights Reserved</span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Use a standard DOMContentLoaded event and ES5/ES6 syntax to ensure no parse errors (Unexpected token '.').
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Safety Check for Libraries
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof THREE === 'undefined' || typeof Lenis === 'undefined') {
+                console.error("Required libraries did not load. Check network connection.");
+                return;
+            }
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 2. Initialize Lenis (Smooth Luxury Scrolling)
+            var lenis = new Lenis({
+                duration: 1.5,
+                easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                smoothTouch: false,
+                touchMultiplier: 2
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // Integrate Lenis with GSAP ScrollTrigger
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(function(time) {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+
+            // 3. Three.js Subtle Cinematic Particles
+            var scene, camera, renderer, particles;
+            function initThreeJS() {
+                var container = document.getElementById('canvas-container');
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                
+                renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                container.appendChild(renderer.domElement);
+
+                var geometry = new THREE.BufferGeometry();
+                var count = 600;
+                var positions = new Float32Array(count * 3);
+
+                for (var i = 0; i < count * 3; i++) {
+                    // Spread particles widely
+                    positions[i] = (Math.random() - 0.5) * 20;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                var material = new THREE.PointsMaterial({
+                    size: 0.02,
+                    color: 0x666666,
+                    transparent: true,
+                    opacity: 0.3
+                });
+
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+                camera.position.z = 5;
+
+                function animateParticles() {
+                    requestAnimationFrame(animateParticles);
+                    particles.rotation.y += 0.0003;
+                    particles.rotation.x += 0.0001;
+                    renderer.render(scene, camera);
+                }
+                animateParticles();
+
+                window.addEventListener('resize', function() {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+            initThreeJS();
+
+            // 4. Cinematic Intro Sequence
+            // Locks scrolling during intro
+            document.body.style.overflow = 'hidden';
+            
+            var introTimeline = gsap.timeline();
+            introTimeline
+                .to('.name-reveal', { opacity: 1, duration: 2.5, ease: "power2.inOut" })
+                .to('.name-reveal', { opacity: 0, duration: 1.5, ease: "power2.inOut", delay: 1 })
+                .to('#intro-symbol', { opacity: 1, scale: 1, duration: 2, ease: "power3.out" })
+                .to('#intro-screen', { 
+                    opacity: 0, 
+                    duration: 1.5, 
+                    ease: "power2.inOut", 
+                    delay: 1.5,
+                    onComplete: function() {
+                        document.getElementById('intro-screen').style.display = 'none';
+                        document.body.style.overflow = ''; // Restore scrolling
+                        
+                        // Fade in main content
+                        gsap.to('#main-content', { opacity: 1, duration: 1.5 });
+                    }
+                });
+
+            // 5. Scroll Storytelling (Movie Title Cards)
+            var storyTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#story-container',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1
+                }
+            });
+
+            // Animate titles passing by
+            storyTimeline
+                .to('#title-1', { opacity: 1, scale: 1.05, duration: 1 })
+                .to('#title-1', { opacity: 0, scale: 1.15, duration: 1 })
+                
+                .to('#title-2', { opacity: 1, scale: 1.05, duration: 1 })
+                .to('#title-2', { opacity: 0, scale: 1.15, duration: 1 })
+                
+                .to('#title-3', { opacity: 1, scale: 1.05, duration: 1 })
+                .to('#title-3', { opacity: 0, scale: 1.15, duration: 1 });
+
+        });
+    </script>
+</body>
+</html>
+            
